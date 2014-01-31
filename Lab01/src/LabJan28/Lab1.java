@@ -2,9 +2,7 @@ package LabJan28;
 
 import java.awt.Color;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
-
 import java.awt.BorderLayout;
 
 public class Lab1 {
@@ -41,6 +39,8 @@ public class Lab1 {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.getContentPane().setBackground(Color.BLUE);
 	
 		
 		LabComponent lc = new LabComponent();

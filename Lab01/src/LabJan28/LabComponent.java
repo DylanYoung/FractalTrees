@@ -42,7 +42,7 @@ public class LabComponent extends JComponent implements MouseMotionListener, Mou
 	}
 	
 	public void setBranchAngle(int i){
-		branchAngle = DEGREE*(i%90);
+		branchAngle = DEGREE*(i);
 	}
 	
 	public double getShrinkFactor(){
@@ -63,7 +63,7 @@ public class LabComponent extends JComponent implements MouseMotionListener, Mou
 	
 	
 	public LabComponent(){
-		colour = Color.black;
+		colour = Color.blue;
 		
 		
 	}
@@ -73,18 +73,14 @@ public class LabComponent extends JComponent implements MouseMotionListener, Mou
 		w = getWidth();
 		double h = getHeight();
 		
-		g2.setBackground(getBackground());
+		setBackground(Color.blue);
 		setLength((int)h/2);
 		treePosition[0] = 0.5;
 
-		//Rectangle r = this.getBounds();
-		
+		int width = (int) ((w/20)*shrinkFactor);
 		for (int i = 0; i<treePosition.length;i++)
 			if (treePosition[i] != 0)
-					drawBranch(g2, treePosition[i]*w, h, getLength(), Math.PI);
-		System.out.println(branchAngle);
-		System.out.println(shrinkFactor);
-		//repaint();
+					drawBranch(g2, treePosition[i]*w, h, getLength(), width, Math.PI);
 		
 		
 		
@@ -94,6 +90,7 @@ public class LabComponent extends JComponent implements MouseMotionListener, Mou
 			double startx, 
 			double starty, 
 			double length, 
+			double width,
 			double angle) 
 	{ 
 			//The equation used by the branches in order to expand 
@@ -102,15 +99,42 @@ public class LabComponent extends JComponent implements MouseMotionListener, Mou
 
 			//attributes of branches 
 			if( 1 < length ) { 
-			g.setColor( length < 5 ? Color.green : Color.black ); 
-			Line2D line = new Line2D.Double((int)startx, (int)starty, (int)endx, (int)endy ); 
-			g.draw(line);
-			drawBranch( g, endx, endy, length * shrinkFactor, angle - branchAngle); 
-			drawBranch( g, endx, endy, length * shrinkFactor, angle + branchAngle); 
-			drawBranch( g, endx, endy, length * shrinkFactor, angle); 
+			g.setColor( length < 20*shrinkFactor ? randomizeColour(Color.green) :randomizeColour(brown));
+
+			for(int i = 0; i<width; i++){
+				g.setColor( length < 20*shrinkFactor ? randomizeColour(g.getColor()) :randomizeColour(brown));
+				Line2D line = new Line2D.Double((int)startx-(Math.cos(angle)*i), (int)starty-Math.sin(angle)*i, (int)endx-(Math.cos(angle)*i*shrinkFactor), (int)endy-Math.sin(angle)*i*shrinkFactor );
+				g.draw(line);
+				g.setColor(randomizeColour(g.getColor()));
+				line = new Line2D.Double((int)startx-Math.cos(angle)*(Math.random()*i), (int)starty-Math.sin(angle)*(Math.random()*i), (int)endx-Math.cos(angle)*i*shrinkFactor, (int)endy-Math.sin(angle)*i*shrinkFactor); 
+				g.draw(line);
+				g.setColor( length < 20*shrinkFactor ? randomizeColour(g.getColor()) :randomizeColour(brown));
+				line = new Line2D.Double((int)startx+Math.cos(angle)*i, (int)starty+Math.sin(angle)*i, (int)endx+Math.cos(angle)*i*shrinkFactor, (int)endy+Math.sin(angle)*i*shrinkFactor );
+				g.draw(line);
+				g.setColor(randomizeColour(g.getColor()));
+				line = new Line2D.Double((int)startx+Math.cos(angle)*(Math.random()*i), (int)starty+Math.sin(angle)*i, (int)endx+Math.cos(angle)*i*shrinkFactor, (int)endy+Math.sin(angle)*i*shrinkFactor ); 
+				g.draw(line);
+			}
+			int j; int k;
+			if (Math.random()<0.5) 
+					{j = -1; k = 1;}
+			else {j = 1; k = -1; }
+			drawBranch( g, endx, endy, length * shrinkFactor, width*shrinkFactor, angle + k * branchAngle); 
+			drawBranch( g, endx, endy, length * shrinkFactor, width*shrinkFactor, angle); 
+			drawBranch( g, endx, endy, length * shrinkFactor,width*shrinkFactor, angle + j * branchAngle); 
+			
 	
 			}
 	} 
+	
+	public Color brown = new Color(139,69,19);
+	
+	private Color randomizeColour(Color c)
+	{
+		if (Math.random()<0.5)
+			return c.darker();
+		else return c.brighter();
+	}
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
@@ -118,7 +142,7 @@ public class LabComponent extends JComponent implements MouseMotionListener, Mou
 		double w = 1.5*(getWidth());
 		double x = arg0.getX(); 
 		setShrinkFactor(x/w);
-		setBranchAngle(arg0.getY());
+		setBranchAngle(90*arg0.getY()/getHeight());
 		repaint();
 		
 		
